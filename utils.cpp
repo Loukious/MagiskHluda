@@ -24,6 +24,7 @@ string utils::getRecentTag() {
     // }
     // fstream("currentTag.txt", ios::out) << d["tag_name"].GetString();
     // return d["tag_name"].GetString();
+    fstream("currentTag.txt", ios::out) << "16.2.1";
     return "16.2.1";
 }
 
