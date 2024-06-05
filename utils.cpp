@@ -13,17 +13,19 @@ namespace fs = std::filesystem;
 utils::utils() {}
 
 string utils::getRecentTag() {
-    RestClient::Response response = RestClient::get(
-            "https://api.github.com/repos/hzzheyang/strongR-frida-android/releases/latest");
-    rapidjson::Document d;
-    if (response.code == 200)
-        d.Parse(response.body.c_str());
-    else {
-        cout << "An Error code has happen: " + to_string(response.code) + response.body << endl;
-        throw response.code;
-    }
-    fstream("currentTag.txt", ios::out) << d["tag_name"].GetString();
-    return d["tag_name"].GetString();
+    // RestClient::Response response = RestClient::get(
+    //         "https://api.github.com/repos/hzzheyang/strongR-frida-android/releases/latest");
+    // rapidjson::Document d;
+    // if (response.code == 200)
+    //     d.Parse(response.body.c_str());
+    // else {
+    //     cout << "An Error code has happen: " + to_string(response.code) + response.body << endl;
+    //     throw response.code;
+    // }
+    // fstream("currentTag.txt", ios::out) << d["tag_name"].GetString();
+    // return d["tag_name"].GetString();
+    fstream("currentTag.txt", ios::out) << "16.2.1";
+    return "16.2.1";
 }
 
 void utils::download(const string &aarch) {
