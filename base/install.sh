@@ -124,7 +124,7 @@ REPLACE="
 print_modname() {
   ui_print " "
   ui_print "    ********************************************"
-  ui_print "    *               MagiskHluda                *"
+  ui_print "    *          Magisk-/KernelSU-Hluda          *"
   ui_print "    ********************************************"
   ui_print " "
 }
@@ -141,20 +141,31 @@ on_install() {
   esac
 
   ui_print "- Detected architecture: $F_ARCH"
+
+  if [ "$BOOTMODE" ] && [ "$KSU" ]; then
+      ui_print "- Installing from KernelSU app"
+      ui_print "- KernelSU version: $KSU_KERNEL_VER_CODE (kernel) + $KSU_VER_CODE (ksud)"
+      UNZIP="/data/adb/ksu/bin/busybox unzip"
+  elif [ "$BOOTMODE" ] && [ "$MAGISK_VER_CODE" ]; then
+      ui_print "- Installing from Magisk app"
+      ui_print "- Magisk version: $MAGISK_VER_CODE"
+      UNZIP="/data/adb/magisk/busybox unzip"
+  else
+    ui_print "*********************************************************"
+    ui_print "! Install from recovery is not supported"
+    ui_print "! Please install from KernelSU or Magisk app"
+    abort    "*********************************************************"
+fi
+
   ui_print "- Extracting module files"
-
   F_TARGETDIR="$MODPATH/system/bin"
-  UNZIP="/data/adb/magisk/busybox unzip"
-  XZ="/data/adb/magisk/busybox xz"
-
   mkdir -p "$F_TARGETDIR"
-  $UNZIP -qq -o "$ZIPFILE" "files/hluda-$F_ARCH.xz" -j -d "$F_TARGETDIR"
+  $UNZIP -qq -o "$ZIPFILE" "files/frida-server-$F_ARCH" -j -d "$F_TARGETDIR"
+  chcon -R u:object_r:system_file:s0 "$F_TARGETDIR"
+  chmod -R 755 "$F_TARGETDIR"
 
-  # Decompress the XZ file
-  $XZ -d "$F_TARGETDIR/hluda-$F_ARCH.xz"
-
-  # Rename the file
-  mv "$F_TARGETDIR/hluda-$F_ARCH" "$F_TARGETDIR/hluda-server"
+  $UNZIP -qq -o "$ZIPFILE" "files/frida-server-$F_ARCH" -j -d "$F_TARGETDIR"
+  mv "$F_TARGETDIR/frida-server-$F_ARCH" "$F_TARGETDIR/frida-server"
 }
 
 

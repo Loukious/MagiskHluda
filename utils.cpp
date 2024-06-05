@@ -70,7 +70,7 @@ void utils::createModuleProps() {
                     "version=" << lastestHludaTag.substr(0, lastestHludaTag.find('-')) << endl;
         moduleProps <<
                     "versionCode=" << lastestHludaTag.substr(0, lastestHludaTag.find('.')) << endl <<
-                    "author=Exo1i\n"
+                    "author=Exo1i & enovella & Loukious\n"
                     "description=Run frida-server on boot\n";
     }
     moduleProps.close();
