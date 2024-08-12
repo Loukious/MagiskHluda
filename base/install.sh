@@ -124,7 +124,7 @@ REPLACE="
 print_modname() {
   ui_print " "
   ui_print "    ********************************************"
-  ui_print "    *          Magisk-/KernelSU-Hluda          *"
+  ui_print "    *               Magisk-Florida             *"
   ui_print "    ********************************************"
   ui_print " "
 }
@@ -133,11 +133,12 @@ print_modname() {
 
 on_install() {
   case $ARCH in
-    arm64) F_ARCH=$ARCH;;
-    arm)   F_ARCH=$ARCH;;
-    x64)   F_ARCH=x86_64;;
-    x86)   F_ARCH=$ARCH;;
-    *)     ui_print "Unsupported architecture: $ARCH"; abort;;
+  arm64 | arm | x86) F_ARCH=$ARCH ;;
+  x64) F_ARCH=x86_64 ;;
+  *)
+    ui_print "Unsupported architecture: $ARCH"
+    abort
+    ;;
   esac
 
   ui_print "- Detected architecture: $F_ARCH"
@@ -160,14 +161,34 @@ fi
   ui_print "- Extracting module files"
   F_TARGETDIR="$MODPATH/system/bin"
   mkdir -p "$F_TARGETDIR"
-  $UNZIP -qq -o "$ZIPFILE" "files/frida-server-$F_ARCH" -j -d "$F_TARGETDIR"
-  chcon -R u:object_r:system_file:s0 "$F_TARGETDIR"
-  chmod -R 755 "$F_TARGETDIR"
 
-  $UNZIP -qq -o "$ZIPFILE" "files/frida-server-$F_ARCH" -j -d "$F_TARGETDIR"
-  mv "$F_TARGETDIR/frida-server-$F_ARCH" "$F_TARGETDIR/frida-server"
+  if [[ -x /data/adb/magisk/busybox ]]; then
+    UNZIP="/data/adb/magisk/busybox unzip"
+  elif [[ -x /system/bin/unzip ]]; then
+    UNZIP="/system/bin/unzip"
+  elif [[ -x /system/xbin/unzip ]]; then
+    UNZIP="/system/xbin/unzip"
+  else
+    abort "unzip Couldnt be found! Try installing busybox by zgfg @ xda!"
+  fi
+
+  if [[ -x /data/adb/magisk/busybox ]]; then
+    GZIP="/data/adb/magisk/busybox gzip"
+  elif [[ -x /system/bin/gzip ]]; then
+    GZIP="/system/bin/gzip"
+  elif [[ -x /vendor/bin/gzip ]]; then
+    GZIP="/vendor/bin/gzip"
+  elif [[ -x /system/xbin/gzip ]]; then
+    GZIP="/system/xbin/gzip"
+  else
+    abort "Gzip Couldnt be found! Try installing busybox by zgfg @ xda!"
+  fi
+
+  $UNZIP -qq -o "$ZIPFILE" "files/florida-$F_ARCH.gz" -j -d "$F_TARGETDIR"
+  $GZIP -d "$F_TARGETDIR/florida-$F_ARCH.gz"
+
+  mv "$F_TARGETDIR/florida-$F_ARCH" "$F_TARGETDIR/frida-server"
 }
-
 
 # Only some special files require specific permissions
 # This function will be called after on_install is done
@@ -178,7 +199,7 @@ set_permissions() {
   set_perm_recursive $MODPATH 0 0 0755 0644
 
   # Custom permissions
-  set_perm $MODPATH/system/bin/hluda-server 0 2000 0755 u:object_r:system_file:s0
+  set_perm $MODPATH/system/bin/florida-server 0 2000 0755 u:object_r:system_file:s0
 }
 
 # You can add more functions to assist your custom script code
