@@ -15,14 +15,14 @@ jobs:
         run: |
           sudo apt install jq
           LATESTHLUDARELEASETAG=$(curl -s https://api.github.com/repos/exo1i/florida/releases/latest | jq -r '.tag_name')
-          LATESTMODULETAG=$(curl -s https://api.github.com/repos/Exo1i/MagiskHluda/releases/latest | jq -r '.tag_name')
+          LATESTMODULETAG=$(curl -s https://api.github.com/repos/Loukious/MagiskHluda/releases/latest | jq -r '.tag_name')
           echo "LATESTHLUDARELEASETAG=${LATESTHLUDARELEASETAG}" >> $GITHUB_ENV
           echo "latest release: ${LATESTHLUDARELEASETAG}"
           echo "LATESTMODULETAG=${LATESTMODULETAG}" >> $GITHUB_ENV
           echo "latest module tag: ${LATESTMODULETAG}"
 
       - name: Create Release Archive and Set Tag Information
-        if: ${{env.LATESTMODULETAG != env.LATESTHLUDARELEASETAG && env.LATESTHLUDARELEASETAG != 'null' && env.LATESTMODULETAG !='null'}}
+        if: ${{env.LATESTMODULETAG != env.LATESTHLUDARELEASETAG && env.LATESTHLUDARELEASETAG != 'null' || env.LATESTMODULETAG =='null'}}
         run: |
           git clone https://github.com/Microsoft/vcpkg.git
           cd vcpkg
@@ -43,7 +43,7 @@ jobs:
           echo "NEW_TAG=$TAG" >> $GITHUB_ENV
 
       - name: Release
-        if: ${{env.LATESTMODULETAG != env.LATESTHLUDARELEASETAG && env.LATESTHLUDARELEASETAG != 'null' && env.LATESTMODULETAG !='null'}}
+        if: ${{env.LATESTMODULETAG != env.LATESTHLUDARELEASETAG && env.LATESTHLUDARELEASETAG != 'null' || env.LATESTMODULETAG =='null'}}
         uses: ncipollo/release-action@v1.13.0
         with:
           artifacts: ./release/*.zip
